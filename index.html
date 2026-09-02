@@ -89,7 +89,14 @@ a{color:inherit}
   height:5px;background:var(--naranja);transform:scaleX(0);
   transform-origin:left;transition:transform var(--t)}
 .menu a:hover,.menu a:focus-visible{color:var(--naranja)}
-.menu a:hover::after,.menu a:focus-visible::after,.menu a.activo::after{transform:scaleX(1)}
+.menu a.activo::after{transform:scaleX(1)}
+/* al recorrer el menú, el subrayado abandona la sección activa
+   y sigue al cursor; al soltar, vuelve a su sitio */
+.menu:hover a.activo::after,
+.menu:focus-within a.activo::after{transform:scaleX(0)}
+.menu a:hover::after,.menu a:focus-visible::after{transform:scaleX(1)}
+.menu a.activo:hover::after,
+.menu a.activo:focus-visible::after{transform:scaleX(1)}
 
 /* ══ tapa: cuadrícula, hero y «qué hace» ═════════ */
 .tapa{position:relative;
@@ -202,8 +209,12 @@ a{color:inherit}
   transition:transform var(--t)}
 .lista svg{flex:none}
 .lista svg circle{transition:fill var(--t)}
-.lista li:hover{transform:translateX(4px)}
+.lista li svg circle{fill:var(--tinta)}
+.lista li:first-child svg circle{fill:var(--naranja)}
+/* mientras el cursor recorre la lista, solo se marca la línea señalada */
+.lista:hover li svg circle{fill:var(--tinta)}
 .lista li:hover svg circle{fill:var(--naranja)}
+.lista li:hover{transform:translateX(4px)}
 
 /* ══ pie ═════════════════════════════════════════ */
 .pie{background:var(--tinta);color:var(--blanco);padding:74px 0 54px}
@@ -267,17 +278,17 @@ a{color:inherit}
   border:1px solid rgba(12,24,38,.45);padding:6px 10px;
   opacity:0;animation:sube 11s linear infinite}
 @keyframes sube{
-  0%  {opacity:0;transform:translateY(0) scale(.96)}
+  0%  {opacity:0;transform:translate(0,0) scale(.96)}
   9%  {opacity:.95}
   24% {opacity:.95}
-  38% {opacity:0;transform:translateY(-74px) scale(1)}
-  100%{opacity:0;transform:translateY(-74px) scale(1)}}
-.vapor i:nth-child(1){left:39%;  top:12.2%;animation-delay:0s}
-.vapor i:nth-child(2){left:61%;  top:10.6%;animation-delay:1.8s}
-.vapor i:nth-child(3){left:47.5%;top:13%;  animation-delay:3.6s}
-.vapor i:nth-child(4){left:64%;  top:12.8%;animation-delay:5.4s}
-.vapor i:nth-child(5){left:37%;  top:10%;  animation-delay:7.2s}
-.vapor i:nth-child(6){left:53%;  top:10.4%;animation-delay:9s}
+  38% {opacity:0;transform:translate(26px,-70px) scale(1)}
+  100%{opacity:0;transform:translate(26px,-70px) scale(1)}}
+.vapor i:nth-child(1){left:56%;top:12.4%;animation-delay:0s}
+.vapor i:nth-child(2){left:62%;top:10.4%;animation-delay:1.8s}
+.vapor i:nth-child(3){left:59%;top:13.4%;animation-delay:3.6s}
+.vapor i:nth-child(4){left:64.5%;top:12.6%;animation-delay:5.4s}
+.vapor i:nth-child(5){left:61%;top:9.6%; animation-delay:7.2s}
+.vapor i:nth-child(6){left:57%;top:10.8%;animation-delay:9s}
 
 @media (prefers-reduced-motion:reduce){.vapor{display:none}}
 @media (max-width:960px){.vapor{display:none}}
