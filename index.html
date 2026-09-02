@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sala de crisis</title>
+<meta name="description" content="Asistente conversacional para entender, ordenar y preparar la respuesta a una crisis. Prototipo académico.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://use.typekit.net/qdp3oii.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600;700&family=Exo+2:wght@400;500;600;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+
+:root{
+  --naranja:#FF512F;
+  --tinta:#0C1826;
+  --gris:#DFDFDF;
+  --rosa:#FFDCD5;
+  --crema:#F1EEE8;
+  --blanco:#FFFFFF;
+
+  --rotulo:"alfarn-2","Barlow Semi Condensed",sans-serif;
+  --titular:"Barlow Semi Condensed",sans-serif;
+  --texto:"Exo 2",system-ui,sans-serif;
+
+  --env:1200px;
+  --lado:40px;
+}
+
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:var(--gris);color:var(--tinta);
+  font-family:var(--texto);font-size:15px;line-height:1.55;
+  -webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit}
+h1,h2,h3,p{margin:0}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+.env{max-width:var(--env);margin:0 auto;padding:0 var(--lado)}
+
+/* ── piezas comunes ─────────────────────────────── */
+
+/* rótulo de sección: cantonera + rótulo en Alfarn */
+.rotulo{display:flex;align-items:center;gap:16px}
+.rotulo h2{font-family:var(--rotulo);font-weight:700;
+  font-size:clamp(1.5rem,3vw,2.05rem);letter-spacing:.02em;
+  text-transform:uppercase;line-height:1}
+.marcador{flex:none;width:34px;height:34px}
+
+.boton{display:inline-flex;align-items:center;gap:22px;
+  font-family:var(--texto);font-weight:600;font-size:.86rem;
+  padding:13px 20px;text-decoration:none;border:0;white-space:nowrap}
+.boton .flecha{font-weight:400}
+.boton--tinta{background:var(--tinta);color:var(--blanco)}
+.boton--naranja{background:var(--naranja);color:var(--blanco)}
+.boton:hover{opacity:.88}
+:focus-visible{outline:3px solid var(--tinta);outline-offset:3px}
+
+.nota{display:flex;align-items:center;gap:7px;font-size:.75rem;line-height:1.4}
+.nota .i{flex:none;width:13px;height:13px;border:1px solid currentColor;
+  border-radius:50%;font-size:.58rem;font-weight:700;line-height:11px;
+  text-align:center;font-style:italic;opacity:.9}
+
+/* ── barra superior ─────────────────────────────── */
+.barra{background:var(--gris)}
+.barra .env{display:flex;align-items:center;gap:34px;
+  padding-top:16px;padding-bottom:16px}
+.logo{display:block;flex:none;line-height:0}
+.logo img{height:36px;width:auto}
+.menu{display:flex;gap:26px;flex-wrap:wrap}
+.menu a{text-decoration:none;font-size:.8rem;font-weight:500}
+.menu a:hover{color:var(--naranja)}
+
+/* ── hero ───────────────────────────────────────── */
+.hero{position:relative;padding-bottom:70px;overflow:hidden}
+.hero__rosa{position:absolute;left:0;top:0;
+  width:clamp(90px,16vw,215px);height:305px;background:var(--rosa);z-index:0}
+.hero .env{position:relative;z-index:1;padding-top:30px}
+.hero__caja{position:relative;background:var(--naranja);
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:24px;padding:54px 46px 58px;min-height:430px}
+.hero__texto{max-width:33ch}
+.hero h1{font-family:var(--titular);font-weight:700;
+  font-size:clamp(2.6rem,6.2vw,4.4rem);line-height:.94;letter-spacing:-.02em}
+.hero__sub{font-family:var(--titular);font-weight:700;color:var(--blanco);
+  font-size:clamp(1.15rem,2.4vw,1.6rem);line-height:1.1;margin-top:14px}
+.hero__cuerpo{color:var(--blanco);font-size:.82rem;margin-top:16px;max-width:34ch}
+.hero__texto .boton{margin-top:26px}
+
+.hero__marca{display:flex;flex-direction:column;align-items:flex-end;
+  justify-content:space-between;text-align:right;gap:34px;
+  padding-top:14px;position:relative;z-index:3}
+.hero__pie{display:flex;flex-direction:column;align-items:flex-end;gap:7px}
+.hero__pie{max-width:44ch}
+.hero__pie p{font-size:.76rem}
+.hero__pie .nota{justify-content:flex-end;text-align:right;align-items:flex-start}
+.hero__pie .nota .i{margin-top:3px}
+
+.hero__foto{position:absolute;left:49%;transform:translateX(-50%);
+  top:-16%;height:99%;width:auto;z-index:2;pointer-events:none;
+  mix-blend-mode:luminosity}
+
+/* marca grande */
+.marca-grande{width:clamp(190px,27vw,368px);height:auto;margin-left:auto}
+
+/* ── qué hace ───────────────────────────────────── */
+.quehace{padding:26px 0 0}
+.quehace__caja{background:var(--naranja);padding:44px 46px 34px}
+.quehace .rotulo{margin-bottom:44px}
+.pista{position:relative;display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));gap:26px;
+  padding:0 40px 4px 92px}
+.pista::before{content:"";position:absolute;left:78px;right:24px;top:64px;
+  height:2px;background:var(--tinta)}
+.empuja{position:absolute;left:8px;top:34px;width:62px;height:auto;z-index:1}
+.paso{position:relative;z-index:1;text-align:center}
+.paso__disco{width:132px;height:auto;margin:0 auto}
+.paso h3{font-family:var(--titular);font-weight:700;color:var(--blanco);
+  font-size:clamp(1.7rem,3.4vw,2.4rem);line-height:1;margin-top:18px}
+.paso p{color:var(--blanco);font-size:.76rem;margin:12px auto 0;max-width:24ch}
+.quehace .nota{justify-content:center;margin-top:34px;font-weight:600}
+.quehace .nota b{font-weight:700}
+
+/* ── lo que la hace diferente ───────────────────── */
+.diferente{padding:78px 0 0}
+.diferente__intro{font-size:.78rem;margin:8px 0 42px 50px}
+.tres{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:38px}
+.rasgo{display:flex;gap:16px;align-items:flex-start}
+.rasgo__disco{flex:none;width:54px;height:auto}
+.rasgo h3{font-family:var(--texto);font-weight:700;font-size:.86rem;
+  margin-bottom:5px}
+.rasgo p{font-size:.76rem;max-width:30ch}
+
+.tarjeta-envoltorio{position:relative;max-width:700px;margin:52px auto 0;
+  padding:14px}
+.tarjeta{background:var(--blanco);display:flex;gap:20px;align-items:center;
+  padding:22px 30px}
+.tarjeta h3{font-family:var(--texto);font-weight:700;font-size:.86rem;
+  margin-bottom:5px}
+.tarjeta p{font-size:.76rem}
+.cantonera{position:absolute;width:26px;height:26px;
+  border:3px solid var(--tinta)}
+.cantonera--si{top:0;left:0;border-right:0;border-bottom:0}
+.cantonera--sd{top:0;right:0;border-left:0;border-bottom:0}
+.cantonera--ii{bottom:0;left:0;border-right:0;border-top:0}
+.cantonera--id{bottom:0;right:0;border-left:0;border-top:0}
+
+/* ── trazabilidad ───────────────────────────────── */
+.traza{background:var(--naranja);margin-top:82px;padding:52px 0 58px}
+.traza .rotulo h2{font-size:clamp(1rem,2vw,1.22rem)}
+.traza .marcador{width:26px;height:26px}
+.traza h3{font-family:var(--titular);font-weight:700;color:var(--blanco);
+  font-size:clamp(1.9rem,4.4vw,3rem);line-height:.98;letter-spacing:-.02em;
+  margin:30px 0 34px}
+.cifras{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  align-items:stretch}
+.cifra{padding:6px 26px;border-left:2px solid rgba(255,255,255,.6)}
+.cifra:first-child{border-left:0;padding-left:0}
+.cifra b{display:block;font-family:var(--titular);font-weight:700;
+  color:var(--tinta);font-size:clamp(3.8rem,8.4vw,6.8rem);line-height:.88;
+  letter-spacing:-.035em}
+.cifra span{display:block;color:var(--blanco);font-size:.76rem;
+  line-height:1.25;margin-top:12px;max-width:15ch}
+.traza .nota{justify-content:center;color:var(--blanco);margin-top:38px}
+
+/* ── tener en cuenta ────────────────────────────── */
+.cuenta{padding:74px 0 88px}
+.lista{list-style:none;margin:36px 0 0;padding:0 0 0 50px;
+  display:flex;flex-direction:column;gap:15px}
+.lista li{display:flex;align-items:center;gap:14px;font-size:.82rem}
+.lista svg{flex:none}
+
+/* ── pie ────────────────────────────────────────── */
+.pie{background:var(--tinta);color:var(--blanco);padding:96px 0 90px}
+.pie .env{display:grid;grid-template-columns:1.35fr 1fr;gap:60px;
+  align-items:start}
+.pie h2{font-family:var(--titular);font-weight:700;
+  font-size:clamp(1.9rem,4.4vw,2.9rem);line-height:1.02}
+.pie h2 em{display:block;font-style:normal;color:var(--naranja)}
+.pie .boton{margin-top:26px}
+.pie__ficha{display:flex;flex-direction:column;gap:16px}
+.pie__ficha p{font-size:.78rem;color:#C6CDD4;max-width:34ch}
+.pie__ficha .nota{color:#7C8894;font-size:.68rem;align-items:flex-start}
+.pie__ficha .nota .i{margin-top:2px}
+.pie__ficha .logo img{height:52px}
+.pie__ficha .logo svg{height:52px;width:auto;display:block}
+
+/* ── adaptación ─────────────────────────────────── */
+@media (max-width:900px){
+  :root{--lado:24px}
+  .hero__caja{grid-template-columns:1fr;padding:40px 28px 44px;min-height:0}
+  .hero__texto{order:1}
+  .hero__foto{order:2}
+  .hero__marca{order:3;align-items:flex-start;text-align:left;
+    margin-top:6px;padding-top:0}
+  .hero__pie{align-items:flex-start;max-width:none}
+  .hero__pie .nota{justify-content:flex-start;text-align:left}
+  .marca-grande{width:min(230px,62%);margin-left:0}
+  .hero__foto{position:static;transform:none;width:auto;
+    height:auto;max-height:260px;margin:14px auto 2px}
+  .hero__rosa{height:200px}
+  .quehace__caja{padding:34px 26px 28px}
+  .pista{grid-template-columns:1fr;gap:38px;padding:0}
+  .pista::before{display:none}
+  .empuja{display:none}
+  .tres{grid-template-columns:1fr;gap:26px}
+  .diferente__intro{margin-left:0}
+  .tarjeta{flex-direction:column;align-items:flex-start;text-align:left}
+  .cifras{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px 0}
+  .cifra{border-left:0;padding-left:0}
+  .lista{padding-left:0}
+  .pie{padding:64px 0 60px}
+  .pie .env{grid-template-columns:1fr;gap:44px}
+  .menu{gap:16px}
+  .barra .env{gap:18px;flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ barra superior ══════════════════════════════ -->
+<header class="barra">
+  <div class="env">
+    <a class="logo" href="#top"><img src="img/logo.svg" alt="Sala de crisis"></a>
+    <nav class="menu" aria-label="Secciones">
+      <a href="#quehace">¿Qué hace?</a>
+      <a href="#diferente">Lo que hace diferente</a>
+      <a href="#trazabilidad">Trazabilidad</a>
+      <a href="https://chatgpt.com/g/g-6a78a6c8aea88191b72fe24d175d3e60-sala-de-crisis-v8-1" target="_blank" rel="noopener">Ir a Sala de Crisis</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ══ hero ════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero__rosa" aria-hidden="true"></div>
+  <div class="env">
+    <div class="hero__caja">
+
+      <div class="hero__texto">
+        <h1>Las crisis<br>no avisan</h1>
+        <p class="hero__sub">¿Ya sabes qué harías?</p>
+        <p class="hero__cuerpo">Ordena lo que sabes, contrasta opciones y prepara cómo responder.</p>
+        <a class="boton boton--tinta" href="https://chatgpt.com/g/g-6a78a6c8aea88191b72fe24d175d3e60-sala-de-crisis-v8-1" target="_blank" rel="noopener">
+          Entrar a Sala de Crisis <span class="flecha" aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
+
+      <div class="hero__marca">
+        <img class="marca-grande" src="img/marca-grande.png" alt="Sala de crisis">
+        <div class="hero__pie">
+          <p>Sala de crisis es un asistente conversacional con IA.</p>
+          <p class="nota"><span class="i">i</span> La IA te ayuda a pensar. La decisión sigue siendo tuya</p>
+        </div>
+      </div>
+
+      <img class="hero__foto" src="img/extintor.png" alt="" onerror="this.style.display='none'">
+    </div>
+  </div>
+</section>
+
+<!-- ══ qué hace ════════════════════════════════════ -->
+<section class="quehace" id="quehace">
+  <div class="env">
+    <div class="quehace__caja">
+
+      <div class="rotulo">
+        <svg class="marcador" viewBox="0 0 34 34" aria-hidden="true">
+          <path d="M2 11 V2 H11 M23 2 H32 V11 M32 23 V32 H23 M11 32 H2 V23"
+                fill="none" stroke="#0C1826" stroke-width="3.4"/>
+          <rect x="10" y="10" width="14" height="14" fill="#0C1826"/>
+        </svg>
+        <h2>Qué hace</h2>
+      </div>
+
+      <div class="pista">
+        <svg class="empuja" viewBox="0 0 62 46" aria-hidden="true">
+          <g fill="none" stroke="#0C1826" stroke-width="3" stroke-linecap="round">
+            <circle cx="20" cy="8" r="5.4" fill="#0C1826" stroke="none"/>
+            <path d="M20 15 L14 27"/>
+            <path d="M14 27 L8 42"/>
+            <path d="M14 27 L26 38"/>
+            <path d="M18 19 L36 15"/>
+            <path d="M17 24 L34 22"/>
+          </g>
+        </svg>
+
+        <div class="paso">
+          <img class="paso__disco" src="img/icono-entender.png" alt="">
+          <h3>Entender</h3>
+          <p>Separar el ruido de lo que realmente importa.</p>
+        </div>
+
+        <div class="paso">
+          <img class="paso__disco" src="img/icono-ordenar.png" alt="">
+          <h3>Ordenar</h3>
+          <p>Ver qué encaja, qué falta y qué necesita atención.</p>
+        </div>
+
+        <div class="paso">
+          <img class="paso__disco" src="img/icono-preparar.png" alt="">
+          <h3>Preparar</h3>
+          <p>Comparar opciones y trabajar qué comunicar.</p>
+        </div>
+      </div>
+
+      <p class="nota"><span class="i">i</span> <span><b>No necesitas llegar con todo claro.</b> Para eso está la Sala.</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ lo que la hace diferente ════════════════════ -->
+<section class="diferente" id="diferente">
+  <div class="env">
+
+    <div class="rotulo">
+      <svg class="marcador" viewBox="0 0 34 34" aria-hidden="true">
+        <path d="M2 11 V2 H11 M23 2 H32 V11 M32 23 V32 H23 M11 32 H2 V23"
+              fill="none" stroke="#0C1826" stroke-width="3.4"/>
+        <rect x="10" y="10" width="14" height="14" fill="#FF512F"/>
+      </svg>
+      <h2>Lo que la hace diferente</h2>
+    </div>
+    <p class="diferente__intro">Sí, es un ChatGPT. La diferencia está en lo que se le exige.</p>
+
+    <div class="tres">
+      <div class="rasgo">
+        <img class="rasgo__disco" src="img/rasgo-certezas.png" alt="">
+        <div>
+          <h3>No inventa certezas</h3>
+          <p>Separa lo confirmado, lo que está sin confirmar y lo que todavía no sabemos.</p>
+        </div>
+      </div>
+
+      <div class="rasgo">
+        <img class="rasgo__disco" src="img/rasgo-decide.png" alt="">
+        <div>
+          <h3>No decide por ti</h3>
+          <p>Puede ayudarte a comparar opciones y argumentarlas. La decisión pertenece a quien tiene la responsabilidad de tomarla.</p>
+        </div>
+      </div>
+
+      <div class="rasgo">
+        <img class="rasgo__disco" src="img/rasgo-habla.png" alt="">
+        <div>
+          <h3>No habla por ti</h3>
+          <p>Puede ayudarte a preparar la comunicación. La voz y la responsabilidad final siguen siendo humanas.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tarjeta-envoltorio">
+      <span class="cantonera cantonera--si" aria-hidden="true"></span>
+      <span class="cantonera cantonera--sd" aria-hidden="true"></span>
+      <span class="cantonera cantonera--ii" aria-hidden="true"></span>
+      <span class="cantonera cantonera--id" aria-hidden="true"></span>
+      <div class="tarjeta">
+        <svg width="46" height="46" viewBox="0 0 46 46" aria-hidden="true" style="flex:none">
+          <circle cx="23" cy="23" r="21" fill="none" stroke="#FF512F" stroke-width="2.6"/>
+          <text x="23" y="32" text-anchor="middle" fill="#0C1826"
+                font-family="Barlow Semi Condensed, sans-serif"
+                font-size="26" font-weight="700">?</text>
+        </svg>
+        <div>
+          <h3>¿Y si no es una crisis?</h3>
+          <p>La Sala también sabe decir cuándo algo todavía no es una crisis. Y si puede escalar, te ayuda a prepararte antes de que lo sea.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ trazabilidad ════════════════════════════════ -->
+<section class="traza" id="trazabilidad">
+  <div class="env">
+
+    <div class="rotulo">
+      <svg class="marcador" viewBox="0 0 34 34" aria-hidden="true">
+        <path d="M2 11 V2 H11 M23 2 H32 V11 M32 23 V32 H23 M11 32 H2 V23"
+              fill="none" stroke="#0C1826" stroke-width="3.8"/>
+        <rect x="10" y="10" width="14" height="14" fill="#0C1826"/>
+      </svg>
+      <h2>Trazabilidad: de dónde sale</h2>
+    </div>
+
+    <h3>Construida desde la investigación,<br>no desde una lista de prompts.</h3>
+
+    <div class="cifras">
+      <div class="cifra"><b>7</b><span>Casos en profundidad</span></div>
+      <div class="cifra"><b>3</b><span>Recorridos panorámicos</span></div>
+      <div class="cifra"><b>4</b><span>Continentes</span></div>
+      <div class="cifra"><b>8</b><span>Criterios que no se negocian</span></div>
+    </div>
+
+    <p class="nota"><span class="i">i</span> Investigación · evidencia · casos reales</p>
+
+  </div>
+</section>
+
+<!-- ══ tener en cuenta ═════════════════════════════ -->
+<section class="cuenta">
+  <div class="env">
+
+    <div class="rotulo">
+      <svg class="marcador" viewBox="0 0 34 34" aria-hidden="true">
+        <path d="M2 11 V2 H11 M23 2 H32 V11 M32 23 V32 H23 M11 32 H2 V23"
+              fill="none" stroke="#0C1826" stroke-width="3.4"/>
+        <rect x="10" y="10" width="14" height="14" fill="#0C1826"/>
+      </svg>
+      <h2 style="font-size:clamp(1rem,2vw,1.22rem)">Tener en cuenta</h2>
+    </div>
+
+    <ul class="lista">
+      <li>
+        <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+          <circle cx="11" cy="11" r="11" fill="#FF512F"/>
+          <path d="M6 11.4 l3.4 3.4 L16.4 7.6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        Necesitas una cuenta de ChatGPT. La conversación ocurre allí, no aquí.
+      </li>
+      <li>
+        <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+          <circle cx="11" cy="11" r="11" fill="#0C1826"/>
+          <path d="M6 11.4 l3.4 3.4 L16.4 7.6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        No escribas nombres ni datos personales de nadie. Habla de cargos, no de personas.
+      </li>
+      <li>
+        <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+          <circle cx="11" cy="11" r="11" fill="#0C1826"/>
+          <path d="M6 11.4 l3.4 3.4 L16.4 7.6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        No se guarda solo. Si quieres conservarlo, cópialo antes de cerrar.
+      </li>
+      <li>
+        <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+          <circle cx="11" cy="11" r="11" fill="#0C1826"/>
+          <path d="M6 11.4 l3.4 3.4 L16.4 7.6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        Es el prototipo de una investigación, no un servicio contratado.
+      </li>
+    </ul>
+
+  </div>
+</section>
+
+</main>
+
+<!-- ══ pie ═════════════════════════════════════════ -->
+<footer class="pie">
+  <div class="env">
+
+    <div>
+      <h2>¿Tienes una crisis?<em>Cuéntame qué está pasando</em></h2>
+      <a class="boton boton--naranja" href="https://chatgpt.com/g/g-6a78a6c8aea88191b72fe24d175d3e60-sala-de-crisis-v8-1" target="_blank" rel="noopener">
+        Entrar a Sala de Crisis <span class="flecha" aria-hidden="true">&rarr;</span>
+      </a>
+    </div>
+
+    <div class="pie__ficha">
+      <span class="logo"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 269.9 116.33">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+      }
+
+      .cls-2 {
+        fill: #0b1622;
+      }
+
+      .cls-3 {
+        font-size: 40.8px;
+      }
+
+      .cls-3, .cls-4 {
+        fill: #d3d1d1;
+        font-family: "alfarn", sans-serif; font-weight: 400;
+      }
+
+      .cls-4 {
+        font-size: 32.69px;
+      }
+
+      .cls-5 {
+        fill: #ff512f;
+      }
+    </style>
+  </defs>
+  <text class="cls-3" transform="translate(109.99 79.8)"><tspan x="0" y="0">CRISIS</tspan></text>
+  <text class="cls-4" transform="translate(111.21 45.47)"><tspan x="0" y="0">SALA DE</tspan></text>
+  <g>
+    <polygon class="cls-5" points="50.75 56.87 84.07 56.87 84.07 88.67 92.54 91.76 92.54 10.45 8.96 10.45 8.96 94.02 50.75 94.02 50.75 76.52 50.75 56.87"/>
+    <polygon class="cls-2" points="50.75 56.87 50.75 76.52 84.07 88.67 84.07 56.87 50.75 56.87"/>
+    <polygon class="cls-1" points="84.07 94.02 92.54 94.02 92.54 91.76 84.07 88.67 84.07 94.02"/>
+  </g>
+</svg></span>
+      <p>Un prototipo experimental para entender, ordenar y preparar la respuesta a una crisis.</p>
+      <p class="nota"><span class="i">i</span> La Sala no sustituye la evaluación profesional, la autoridad institucional ni la decisión humana.</p>
+    </div>
+
+  </div>
+</footer>
+
+</body>
+</html>
